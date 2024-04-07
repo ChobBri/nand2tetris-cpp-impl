@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <filesystem>
+#include <array>
 
 #include "commandType.h"
 #include "codeWriter.h"
@@ -12,6 +13,9 @@
 using namespace std;
 
 CodeWriter::CodeWriter(const string& fileName)
+    :
+    m_currentFunctionName(""),
+    m_returnAddressLabelCounter(0)
 {
     m_outputStream = ofstream(fileName, ios::trunc | ios::binary);
 
@@ -23,7 +27,21 @@ CodeWriter::CodeWriter(const string& fileName)
     m_arithLogicCommandSet = {"add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"};
     m_memoryCommandMap = {{"push", C_PUSH}, {"pop", C_POP}};
     m_memorySegmentSet = {"argument", "local", "static", "constant", "this", "that", "pointer", "temp"};
-    fileNameStem = filesystem::path(fileName).stem().string();
+    m_fileNameStem = "";
+
+    writeBoostrap();
+}
+
+void CodeWriter::writeBoostrap()
+{
+    stringstream instrStream;
+    instrStream << "@256\n";
+    instrStream << "D=A\n";
+    instrStream << "@SP\n";
+    instrStream << "M=D\n";
+    m_outputStream << instrStream.str();
+
+    writeCall("Sys.init", 0);
 }
 
 void CodeWriter::unaryOp(const std::string& op, std::string& instructions)
@@ -117,6 +135,7 @@ string CodeWriter::stackPush()
     instrStream << "M=M+1\n";
     return instrStream.str();
 }
+
 string CodeWriter::stackPop()
 {
     stringstream instrStream;
@@ -172,7 +191,7 @@ void CodeWriter::writePushPop(const CommandType command, string& segment, const 
         else if (segment == "static")
         {
             stringstream instrStream;
-            instrStream << "@" << fileNameStem << "." << index << "\n";
+            instrStream << "@" << m_fileNameStem << "." << index << "\n";
             instrStream << "D=M\n";
             instrStream << stackPush();
             m_outputStream << instrStream.str();
@@ -207,15 +226,150 @@ void CodeWriter::writePushPop(const CommandType command, string& segment, const 
         {
             stringstream instrStream;
             instrStream << stackPop();
-            instrStream << "@" << fileNameStem << "." << index << "\n";
+            instrStream << "@" << m_fileNameStem << "." << index << "\n";
             instrStream << "M=D\n";
             m_outputStream << instrStream.str();
         }
     }
 }
 
+void CodeWriter::writeLabel(const std::string& label)
+{
+    stringstream instrStream;
+    instrStream << "(" << label << ")\n";
+    m_outputStream << instrStream.str();
+}
+
+void CodeWriter::writeGoto(const std::string& label)
+{
+    stringstream instrStream;
+    instrStream << "@" << label << "\n";
+    instrStream << "0;JMP\n";
+    m_outputStream << instrStream.str();
+}
+
+void CodeWriter::writeIf(const std::string& label)
+{
+    stringstream instrStream;
+    instrStream << stackPop();
+    instrStream << "@" << label << "\n";
+    instrStream << "D;JNE\n";
+    m_outputStream << instrStream.str();
+}
+
+void CodeWriter::writeFunction(const std::string& funcName, const int nVars)
+{
+    m_currentFunctionName = funcName;
+    m_returnAddressLabelCounter = 0;
+
+    stringstream instrStream;
+    instrStream << "(" << funcName << ")\n";
+    for (int i = 0; i < nVars; i++)
+    {
+        instrStream << "@0\n";
+        instrStream << "D=A\n";
+        instrStream << stackPush();
+    }
+    m_outputStream << instrStream.str();
+}
+
+void CodeWriter::writeCall(const std::string& funcName, const int nArgs)
+{
+    stringstream instrStream;
+
+    const std::string labelName = m_currentFunctionName + "$ret."s + to_string(m_returnAddressLabelCounter++);
+
+    // Save return address
+    instrStream << "@" << labelName << "\n";
+    instrStream << "D=A\n";
+    instrStream << stackPush();
+
+    // Save segments
+    static const array<const string, 4> saveSegments = {"LCL", "ARG", "THIS", "THAT"};
+    for (const string& segment : saveSegments)
+    {
+        instrStream << "@" << segment << "\n";
+        instrStream << "D=M\n";
+        instrStream << stackPush();
+    }
+
+    // Reposition ARG
+    instrStream << "@" << nArgs + 5 << "\n";
+    instrStream << "D=A\n";
+    instrStream << "@SP\n";
+    instrStream << "D=M-D\n";
+    instrStream << "@ARG\n";
+    instrStream << "M=D\n";
+
+    // Reposition LCL
+    instrStream << "@SP\n";
+    instrStream << "D=M\n";
+    instrStream << "@LCL\n";
+    instrStream << "M=D\n";
+
+    // Jump to function
+    instrStream << "@" << funcName << "\n";
+    instrStream << "0;JMP\n";
+
+    // Return label
+    instrStream << "(" << labelName << ")\n";
+
+    m_outputStream << instrStream.str();
+}
+
+void CodeWriter::writeReturn()
+{
+    stringstream instrStream;
+
+    // place endFrame at R13
+    instrStream << "@LCL\n";
+    instrStream << "D=M\n";
+    instrStream << "@R13\n";
+    instrStream << "M=D\n";  
+
+    // place retAddr at R14
+    instrStream << "@5\n";
+    instrStream << "A=D-A\n";
+    instrStream << "D=M\n";
+    instrStream << "@R14\n";
+    instrStream << "M=D\n";  
+
+    // Place returned value at ARG
+    instrStream << stackPop();
+    instrStream << "@ARG\n";
+    instrStream << "A=M\n";
+    instrStream << "M=D\n";
+
+    // SP placed after return value
+    instrStream << "D=A\n"; 
+    instrStream << "@SP\n";
+    instrStream << "M=D+1\n"; 
+
+    // Restore segments
+    static const array<const string, 4> restoreSegments = {"THAT", "THIS", "ARG", "LCL"};
+    for (const string& segment : restoreSegments)
+    {
+        instrStream << "@R13\n";
+        instrStream << "AM=M-1\n";
+        instrStream << "D=M\n";
+        instrStream << "@" << segment << "\n";
+        instrStream << "M=D\n";
+    }
+
+    // Jump to return address
+    instrStream << "@R14\n";
+    instrStream << "A=M\n";
+    instrStream << "0;JMP\n";
+
+    m_outputStream << instrStream.str();
+}
+
+void CodeWriter::setFileName(const std::string& fileName)
+{
+    m_fileNameStem = filesystem::path(fileName).stem().string();
+}
+
 void CodeWriter::close()
 {
     m_outputStream.close();
 }
-

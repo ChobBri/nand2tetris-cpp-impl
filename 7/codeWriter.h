@@ -39,6 +39,5 @@ private:
     std::unordered_set<std::string> m_arithLogicCommandSet;
     std::unordered_map<std::string, CommandType> m_memoryCommandMap;
     std::unordered_set<std::string> m_memorySegmentSet;
-    // std::unordered_map<std::string, uint16_t> m_
-    std::string fileNameStem;
+    std::string m_fileNameStem;
 };

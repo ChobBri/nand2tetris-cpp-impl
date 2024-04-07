@@ -23,7 +23,7 @@ CodeWriter::CodeWriter(const string& fileName)
     m_arithLogicCommandSet = {"add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"};
     m_memoryCommandMap = {{"push", C_PUSH}, {"pop", C_POP}};
     m_memorySegmentSet = {"argument", "local", "static", "constant", "this", "that", "pointer", "temp"};
-    fileNameStem = filesystem::path(fileName).stem().string();
+    m_fileNameStem = filesystem::path(fileName).stem().string();
 }
 
 void CodeWriter::unaryOp(const std::string& op, std::string& instructions)
@@ -172,7 +172,7 @@ void CodeWriter::writePushPop(const CommandType command, string& segment, const 
         else if (segment == "static")
         {
             stringstream instrStream;
-            instrStream << "@" << fileNameStem << "." << index << "\n";
+            instrStream << "@" << m_fileNameStem << "." << index << "\n";
             instrStream << "D=M\n";
             instrStream << stackPush();
             m_outputStream << instrStream.str();
@@ -207,7 +207,7 @@ void CodeWriter::writePushPop(const CommandType command, string& segment, const 
         {
             stringstream instrStream;
             instrStream << stackPop();
-            instrStream << "@" << fileNameStem << "." << index << "\n";
+            instrStream << "@" << m_fileNameStem << "." << index << "\n";
             instrStream << "M=D\n";
             m_outputStream << instrStream.str();
         }

@@ -23,7 +23,7 @@ Parser::Parser(const std::string& fileName)
     }
 
     m_arithLogicCommandSet = {"add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"};
-    m_memoryCommandMap = {{"push", C_PUSH}, {"pop", C_POP}};
+    m_memoryCommandMap = {{"push", C_PUSH}, {"pop", C_POP}, {"label", C_LABEL}, {"goto", C_GOTO}, {"if-goto", C_IF}, {"function", C_FUNCTION}, {"return", C_RETURN}, {"call", C_CALL}};
     m_memorySegmentSet = {"argument", "local", "static", "constant", "this", "that", "pointer", "temp"};
 
     m_lineCount = numberOfCommands(fileName); 
@@ -89,12 +89,27 @@ void Parser::advance()
             else if (m_memoryCommandMap.find(token) != m_memoryCommandMap.end())
             {
                 m_commandType = m_memoryCommandMap.at(token);
+
                 string segment;
-                int index;
-                if (ss >> segment >> index)
+                if (m_commandType == C_RETURN)
+                {
+                }
+                else if (ss >> segment)
                 {
                     m_arg1 = segment;
-                    m_arg2 = index;
+
+                    int index;
+                    if (m_commandType == C_LABEL || m_commandType == C_GOTO || m_commandType == C_IF)
+                    {
+                    }
+                    else if (ss >> index)
+                    {
+                        m_arg2 = index;
+                    }
+                    else
+                    {
+                        throw runtime_error(string(__func__) + "Invalid syntax");
+                    }
                 }
                 else
                 {
