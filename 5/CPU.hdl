@@ -1,0 +1,87 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/5/CPU.hdl
+/**
+ * The Hack Central Processing unit (CPU).
+ * Parses the binary code in the instruction input and executes it according to the
+ * Hack machine language specification. In the case of a C-instruction, computes the
+ * function specified by the instruction. If the instruction specifies to read a memory
+ * value, the inM input is expected to contain this value. If the instruction specifies
+ * to write a value to the memory, sets the outM output to this value, sets the addressM
+ * output to the target address, and asserts the writeM output (when writeM = 0, any
+ * value may appear in outM).
+ * If the reset input is 0, computes the address of the next instruction and sets the
+ * pc output to that value. If the reset input is 1, sets pc to 0.
+ * Note: The outM and writeM outputs are combinational: they are affected by the
+ * instruction's execution during the current cycle. The addressM and pc outputs are
+ * clocked: although they are affected by the instruction's execution, they commit to
+ * their new values only in the next cycle.
+ */
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write to M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+    PARTS:
+    // var init
+    And(a=instruction[15], b=true, out=cinstruction);
+    And(a=instruction[4], b=true, out=dregbit);
+
+    // a-bit; between mval or aval
+	  Mux16(a=instruction, b=aluout, sel=instruction[15], out=amuxout);
+
+    // load a
+    Not(in=instruction[15], out=ainstruction);
+    Or(a=ainstruction, b=instruction[5], out=loada);
+    ARegister(in=amuxout, load=loada, out=outA);
+
+    // m or a
+    Mux16(a=outA, b=inM, sel=instruction[12], out=mora);
+
+    // load d reg
+    And(a=cinstruction, b=dregbit, out=dload);
+    DRegister(in=aluout, load=dload, out=dregout);
+
+    //alu
+    And(a=instruction[11], b=true, out=zxin);
+    And(a=instruction[10], b=true, out=nxin);
+    And(a=instruction[9], b=true, out=zyin);
+    And(a=instruction[8], b=true, out=nyin);
+    And(a=instruction[7], b=true, out=fin);
+    And(a=instruction[6], b=true, out=noin);
+
+    ALU(x=dregout, y=mora, zx=zxin, nx=nxin, zy=zyin, ny=nyin, f=fin, no=noin, out=aluout, zr=zrout, ng=ngout);
+    //aluend
+
+
+    And16(a=outA, b=true, out[0..14]=addressM);
+    And(a=instruction[15], b=instruction[3], out=writeMflag);
+    And(a=writeMflag, b=true, out=writeM);
+
+    // jump checks / PC
+    And(a=instruction[2], b=ngout, out=isng);
+    And(a=instruction[1], b=zrout, out=iszr);
+    Or(a=zrout, b=ngout, out=ngr);
+    Not(in=ngr, out=grout);
+    And(a=instruction[0], b=grout, out=isgr);
+
+    Or(a=isng, b=iszr, out=ngorzr);
+    Or(a=ngorzr, b=isgr, out=possiblejmp);
+
+    And(a=possiblejmp, b=cinstruction, out=isjmp);
+    Not(in=isjmp, out=increflag);
+    
+    PC(in=outA, load=isjmp, inc=increflag, reset=reset, out[0..14]=pc);
+    // end PC
+
+    And16(a=aluout, b=true, out=outM);
+}
