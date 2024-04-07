@@ -1,0 +1,51 @@
+class KeyCode {
+    function int LeftArrow()
+    {
+        return 130;
+    }
+
+    function int UpArrow()
+    {
+        return 131;
+    }
+
+    function int RightArrow()
+    {
+        return 132;
+    }
+
+    function int DownArrow()
+    {
+        return 133;
+    }
+
+    function int z()
+    {
+        return 122;
+    }
+
+    function int Z()
+    {
+        return 90;
+    }
+
+    function int x()
+    {
+        return 120;
+    }
+
+    function int X()
+    {
+        return 88;
+    }
+
+    function int c()
+    {
+        return 99;
+    }
+
+    function int C()
+    {
+        return 67;
+    }
+}

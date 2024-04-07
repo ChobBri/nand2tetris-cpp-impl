@@ -1,0 +1,89 @@
+class SevenBag {
+    field Array pieces;
+
+    field int index;
+
+    /** Constructs a new square game. */
+    constructor SevenBag new() {
+        let pieces = Array.new(7);
+        let index = 8;
+        return this;
+    }
+
+    method int getPiece(char seed) {
+        var int piece;
+
+        if (index > 6) {
+            let index = 0;
+            do fillBag(pieces);
+            do fisherYates(pieces, seed);
+        }
+
+        let piece = pieces[index];
+        let index = index + 1;
+        return piece;
+    }
+
+    method void fillBag(Array arr)
+    {
+        let arr[0] = TEnum.IPiece();
+        let arr[1] = TEnum.JPiece();
+        let arr[2] = TEnum.LPiece();
+        let arr[3] = TEnum.OPiece();
+        let arr[4] = TEnum.SPiece();
+        let arr[5] = TEnum.TPiece();
+        let arr[6] = TEnum.ZPiece();
+        return;
+    }
+
+    method void fisherYates(Array arr, char seed)
+    {
+        var char i;
+        var char temp;
+        var char rand;
+
+        let i = 0;
+        let temp = 0;
+        let rand = 0;
+        while (i < 7) {
+            let temp = arr[i];
+            let rand = SevenBag.random(seed, 7 - i);
+            let arr[i] = arr[i + rand];
+            let arr[i + rand] = temp;
+            let i = i + 1;
+        }
+
+        return;
+    }
+
+    method void dispose() {
+        do pieces.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    function char random(char seed, char limit) {
+        var char s;
+        let s = seed;
+
+        let s = s * 1497 + 11233;
+        let s = SevenBag.xor(s, 1237);
+        let s = s - ((s / limit) * limit);
+        if (s > (limit - 1)) {
+            return limit - 1;
+        }
+        if (s < 0) {
+            return 0;
+        }
+        return s;
+    }
+
+    function char xor(char x, char y) {
+        var char left;
+        var char right;
+
+        let left = x & (~y);
+        let right = (~x) & y;
+        return (left | right);
+    }
+}

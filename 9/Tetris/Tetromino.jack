@@ -1,0 +1,274 @@
+/**
+ * Implements the Square game.
+ * This simple game allows the user to move a black square around
+ * the screen, and change the square's size during the movement.
+ * When the game starts, a square of 30 by 30 pixels is shown at the
+ * top-left corner of the screen. The user controls the square as follows.
+ * The 4 arrow keys are used to move the square up, down, left, and right.
+ * The 'z' and 'x' keys are used, respectively, to decrement and increment
+ * the square's size. The 'q' key is used to quit the game.
+ */
+
+class Tetromino {
+    field int size;
+    field Array pieceArea;
+
+    constructor Tetromino new(int pieceType) {
+        if (pieceType = TEnum.IPiece()) {
+            let size = 4;
+            let pieceArea = Array.new(size * size);
+            do cleanPieceArea();
+            let pieceArea[4] = Mino.new();
+            let pieceArea[5] = Mino.new();
+            let pieceArea[6] = Mino.new();
+            let pieceArea[7] = Mino.new();
+        }
+        else
+        {
+            if (pieceType = TEnum.JPiece()) {
+                let size = 3;
+                let pieceArea = Array.new(size * size);
+                do cleanPieceArea();
+                let pieceArea[0] = Mino.new();
+                let pieceArea[3] = Mino.new();
+                let pieceArea[4] = Mino.new();
+                let pieceArea[5] = Mino.new();
+            }
+            else
+            {
+                if (pieceType = TEnum.LPiece()) {
+                    let size = 3;
+                    let pieceArea = Array.new(size * size);
+                    do cleanPieceArea();
+                    let pieceArea[2] = Mino.new();
+                    let pieceArea[3] = Mino.new();
+                    let pieceArea[4] = Mino.new();
+                    let pieceArea[5] = Mino.new();
+                }
+                else
+                {
+                    if (pieceType = TEnum.OPiece()) {
+                        let size = 2;
+                        let pieceArea = Array.new(size * size);
+                        do cleanPieceArea();
+                        let pieceArea[0] = Mino.new();
+                        let pieceArea[1] = Mino.new();
+                        let pieceArea[2] = Mino.new();
+                        let pieceArea[3] = Mino.new();
+                    }
+                    else
+                    {
+                        if (pieceType = TEnum.SPiece()) {
+                            let size = 3;
+                            let pieceArea = Array.new(size * size);
+                            do cleanPieceArea();
+                            let pieceArea[1] = Mino.new();
+                            let pieceArea[2] = Mino.new();
+                            let pieceArea[3] = Mino.new();
+                            let pieceArea[4] = Mino.new();
+                        }
+                        else
+                        {
+                            if (pieceType = TEnum.TPiece()) {
+                                let size = 3;
+                                let pieceArea = Array.new(size * size);
+                                do cleanPieceArea();
+                                let pieceArea[1] = Mino.new();
+                                let pieceArea[3] = Mino.new();
+                                let pieceArea[4] = Mino.new();
+                                let pieceArea[5] = Mino.new();
+                            }
+                            else
+                            {
+                                if (pieceType = TEnum.ZPiece()) {
+                                    let size = 3;
+                                    let pieceArea = Array.new(size * size);
+                                    do cleanPieceArea();
+                                    let pieceArea[0] = Mino.new();
+                                    let pieceArea[1] = Mino.new();
+                                    let pieceArea[4] = Mino.new();
+                                    let pieceArea[5] = Mino.new();
+                                }
+                            }
+                        }
+                    }
+                } 
+            }
+        } 
+        return this;
+    }
+
+    method void cleanPieceArea() {
+        var int i;
+        var int len;
+
+        let i = 0;
+        let len = size * size;
+
+        while (i < len)
+        {
+            let pieceArea[i] = null;
+            let i = i + 1;
+        }
+        return;
+    }
+
+    method int hasMino(int x, int y) {
+        if (pieceArea[(y * size) + x] = null)
+        {
+            return 0;
+        }
+        return 1;
+    }
+
+    method Mino getMino(int x, int y) {
+        var Mino mino;
+        let mino = pieceArea[(y * size) + x];
+        let pieceArea[(y * size) + x] = null;
+        return mino;
+    }
+
+    method int getSize() {
+        return size;
+    }
+
+    method void rotateLeft() {
+        var Array pieceAreaCopy;
+        var int i;
+        var int len;
+        var Mino mino;
+
+        var int c, r;
+
+        let i = 0;
+        let len = size * size;
+
+        let pieceAreaCopy = Array.new(size * size);
+        while (i < len)
+        {
+            let mino = pieceArea[i];
+            let pieceAreaCopy[i] = mino;
+            let i = i + 1;
+        }
+
+        let i = 0;
+        while (i < len)
+        {
+            let mino = pieceAreaCopy[i];
+            let r = i / size;
+            let c = i - (r * size);
+
+            let pieceArea[r + ((size - c - 1) * size)] = pieceAreaCopy[i];
+            let i = i + 1;
+        }
+        do pieceAreaCopy.dispose();
+        return;    
+    }
+
+    method void rotateRight() {
+        var Array pieceAreaCopy;
+        var int i;
+        var int len;
+        var Mino mino;
+
+        var int c, r;
+
+        let i = 0;
+        let len = size * size;
+
+        let pieceAreaCopy = Array.new(size * size);
+        while (i < len)
+        {
+            let mino = pieceArea[i];
+            let pieceAreaCopy[i] = mino;
+            let i = i + 1;
+        }
+
+        let i = 0;
+        while (i < len)
+        {
+            let mino = pieceAreaCopy[i];
+            let r = i / size;
+            let c = i - (r * size);
+
+            let pieceArea[(size - r - 1) + (c * size)] = pieceAreaCopy[i];
+            let i = i + 1;
+        }
+        do pieceAreaCopy.dispose();
+
+        return;    
+    }
+
+
+    method void show(int x, int y) {
+        var int i;
+        var int len;
+        var Mino mino;
+
+        var int c, r;
+
+        let i = 0;
+        let len = size * size;
+
+        while (i < len)
+        {
+            let mino = pieceArea[i];
+            if (~(mino = null))
+            {
+                let r = i / size;
+                let c = i - (r * size);
+                do mino.show(x + (c * Mino.getSize()), y + (r * Mino.getSize()));
+            }
+            let i = i + 1;
+        }
+        return;
+    }
+
+    method void hide(int x, int y) {
+        var int i;
+        var int len;
+        var Mino mino;
+
+        var int c, r;
+
+        let i = 0;
+        let len = size * size;
+
+        while (i < len)
+        {
+            let mino = pieceArea[i];
+            if (~(mino = null))
+            {
+                let r = i / size;
+                let c = i - (r * size);
+                do mino.hide(x + (c * Mino.getSize()), y + (r * Mino.getSize()));
+            }
+            let i = i + 1;
+        }
+        return;
+    }
+
+    method void dispose() {
+        var int i;
+        var int len;
+        var Mino mino;
+
+        let i = 0;
+        let len = size * size;
+
+        while (i < len)
+        {
+            let mino = pieceArea[i];
+            if (~(mino = null))
+            {
+                do mino.dispose();
+            }
+            let i = i + 1;
+        }
+        do pieceArea.dispose();
+        return;
+    }
+}
+
+
+

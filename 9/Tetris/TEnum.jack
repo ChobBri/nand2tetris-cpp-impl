@@ -1,0 +1,36 @@
+class TEnum {
+    function int IPiece()
+    {
+        return 0;
+    }
+
+    function int JPiece()
+    {
+        return 1;
+    }
+
+    function int LPiece()
+    {
+        return 2;
+    }
+
+    function int OPiece()
+    {
+        return 3;
+    }
+    
+    function int SPiece()
+    {
+        return 4;
+    }
+
+    function int TPiece()
+    {
+        return 5;
+    }
+
+    function int ZPiece()
+    {
+        return 6;
+    }
+}

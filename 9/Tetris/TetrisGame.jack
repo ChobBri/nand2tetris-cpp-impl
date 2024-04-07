@@ -1,0 +1,248 @@
+/**
+ * Implements the Square game.
+ * This simple game allows the user to move a black square around
+ * the screen, and change the square's size during the movement.
+ * When the game starts, a square of 30 by 30 pixels is shown at the
+ * top-left corner of the screen. The user controls the square as follows.
+ * The 4 arrow keys are used to move the square up, down, left, and right.
+ * The 'z' and 'x' keys are used, respectively, to decrement and increment
+ * the square's size. The 'q' key is used to quit the game.
+ */
+class TetrisGame {
+    field Board gameBoard;
+    field SevenBag sevenBag;
+    field Tetromino currentTetromino;
+
+    field int points;
+
+    field int curX, curY;
+
+    field int dropRate;
+    field int dropTimer;
+
+    field int keyHoldRate;
+    field int keyHoldTimer;
+
+    field char keyPressTick;
+
+    field boolean isGameOver;
+
+    /** Constructs a new square game. */
+    constructor TetrisGame new() {
+        var Mino mino;
+        let gameBoard = Board.new();
+        do gameBoard.show(30, 30);
+
+        let sevenBag = SevenBag.new();
+        let keyPressTick = 12;
+
+        let currentTetromino = Tetromino.new(sevenBag.getPiece(keyPressTick));
+        let curX = 3;
+        let curY = 0;
+
+        do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+
+        let dropRate = 120;
+        let dropTimer = 0;
+
+        let keyHoldRate = 10;
+        let keyHoldTimer = 0;
+
+        let isGameOver = false;
+        let points = 0;
+
+            do Output.moveCursor(13, 32);
+        do Output.printString("Lines cleared: ");
+        do Output.printInt(points);
+        return this;
+    }
+
+    /** Disposes this game. */
+    method void dispose() {
+        do gameBoard.dispose();
+        do sevenBag.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Runs the game: handles the user's inputs and moves the square accordingly */
+    method void run() {
+        var Mino mino;
+         var char key;  // the key currently pressed by the user
+         var char prevKey;
+
+        let key = 0;
+        let prevKey = 0;
+        
+        while (~isGameOver) {
+            // waits for a key to be pressed
+            let key = Keyboard.keyPressed();
+
+            if (~(key = prevKey) | (keyHoldTimer > keyHoldRate))
+            {
+                if (~(key = prevKey))
+                {
+                    let keyHoldTimer = 0;
+                }
+
+                let keyPressTick = keyPressTick + 1; 
+
+                if ((key = KeyCode.z()) | (key = KeyCode.Z())) { 
+                    do attemptRotateLeft(gameBoard, currentTetromino);
+                }
+                if ((key = KeyCode.x()) | (key = KeyCode.X())) { 
+                    do attemptRotateRight(gameBoard, currentTetromino);
+                }
+                if (key = KeyCode.LeftArrow()) {
+                    do attemptMoveLeft(gameBoard, currentTetromino);
+                }
+                if (key = KeyCode.RightArrow()) {
+                    do attemptMoveRight(gameBoard, currentTetromino);
+                }
+                if (key = KeyCode.UpArrow()) {
+                    do attemptMoveUp(gameBoard, currentTetromino);
+                }
+                if (key = KeyCode.DownArrow()) {
+                    do attemptMoveDown(gameBoard, currentTetromino);
+                }
+            }
+            else
+            {
+                let keyHoldTimer = keyHoldTimer + 1;
+            }
+
+            let dropTimer = dropTimer + 1;
+            if (dropTimer > dropRate)
+            {
+                do processBoardCollision(gameBoard, currentTetromino);
+            }
+
+            let prevKey = key;
+            do Sys.wait(16);
+        } // while
+        return;
+    }
+
+    method void processBoardCollision(Board board, Tetromino tetromino) {
+        var int c, r;
+        var int len;
+        var int size;
+        var int clearCount;
+
+        do currentTetromino.hide(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        let curY = curY + 1; 
+        if (gameBoard.isColliding(curX, curY, currentTetromino))
+        {
+            let curY = curY - 1;
+            let c = curX;
+            let r = curY;
+            let size = tetromino.getSize(); 
+            
+            do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+            while (r < (curY + size)) {
+                while (c < (curX + size)) {
+                    if (tetromino.hasMino(c - curX, r - curY)) {
+                        do board.addMino(c, r, tetromino.getMino(c - curX, r - curY));
+                    }
+                    let c = c + 1;
+                }
+                let c = curX;
+                let r = r + 1;
+            }
+            do currentTetromino.dispose();
+
+            let clearCount = board.processBoardClear();
+            let keyHoldTimer = 0;
+            let points = points + clearCount;
+
+            let dropRate = dropRate - clearCount;
+            if (dropRate < 20) {
+                let dropRate = 20;
+            }
+
+
+            do Screen.setColor(false);
+            do Screen.drawRectangle(256, 128, 400, 250);
+            do Output.moveCursor(13, 32);
+            do Output.printString("Lines cleared: ");
+            do Output.printInt(points);
+
+            let currentTetromino = Tetromino.new(sevenBag.getPiece(keyPressTick));
+            let curX = 3;
+            let curY = 0;
+            if (gameBoard.isColliding(curX, curY, currentTetromino))
+            {
+                let isGameOver = true;
+            }
+
+        }
+
+        do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+
+        let dropTimer = 0;
+        return;
+    }
+
+    method void attemptRotateLeft(Board board, Tetromino tetromino) {
+        do tetromino.hide(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        do tetromino.rotateLeft();
+        if (board.isColliding(curX, curY, tetromino))
+        {
+            do tetromino.rotateRight();
+        }
+        do tetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        return;
+    }
+
+    method void attemptRotateRight(Board board, Tetromino tetromino) {
+        do tetromino.hide(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        do tetromino.rotateRight();
+        if (board.isColliding(curX, curY, tetromino))
+        {
+            do tetromino.rotateLeft();
+        }
+        do tetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        return;
+    }
+
+    method void attemptMoveLeft(Board board, Tetromino tetromino) {
+        do currentTetromino.hide(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        let curX = curX - 1; 
+        if (gameBoard.isColliding(curX, curY, currentTetromino))
+        {
+            let curX = curX + 1; 
+        }
+        do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        return;
+    }
+
+    method void attemptMoveRight(Board board, Tetromino tetromino) {
+        do currentTetromino.hide(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        let curX = curX + 1; 
+        if (gameBoard.isColliding(curX, curY, currentTetromino))
+        {
+            let curX = curX - 1; 
+        }
+        do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        return;
+    }
+
+    method void attemptMoveUp(Board board, Tetromino tetromino) {
+        do currentTetromino.hide(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        let curY = curY - 1; 
+        if (gameBoard.isColliding(curX, curY, currentTetromino))
+        {
+            let curY = curY + 1; 
+        }
+        do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        return;
+    }
+
+    method void attemptMoveDown(Board board, Tetromino tetromino) {
+        do processBoardCollision(board, tetromino);
+        return;
+    }
+}
+
+
+
