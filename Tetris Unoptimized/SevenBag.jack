@@ -1,6 +1,5 @@
 class SevenBag {
     field Array pieces;
-
     field int index;
 
     /** Constructs a new square game. */
@@ -26,13 +25,13 @@ class SevenBag {
 
     method void fillBag(Array arr)
     {
-        let arr[0] = TEnum.IPiece();
-        let arr[1] = TEnum.JPiece();
-        let arr[2] = TEnum.LPiece();
-        let arr[3] = TEnum.OPiece();
-        let arr[4] = TEnum.SPiece();
-        let arr[5] = TEnum.TPiece();
-        let arr[6] = TEnum.ZPiece();
+        let arr[0] = 0;
+        let arr[1] = 1;
+        let arr[2] = 2;
+        let arr[3] = 3;
+        let arr[4] = 4;
+        let arr[5] = 5;
+        let arr[6] = 6;
         return;
     }
 
@@ -65,7 +64,6 @@ class SevenBag {
     function char random(char seed, char limit) {
         var char s;
         let s = seed;
-
         let s = s * 1497 + 11233;
         let s = SevenBag.xor(s, 1237);
         let s = s - ((s / limit) * limit);
