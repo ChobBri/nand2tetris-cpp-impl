@@ -113,12 +113,12 @@ class Tetromino {
         return;
     }
 
-    method int hasMino(int x, int y) {
+    method boolean hasMino(int x, int y) {
         if (pieceArea[(y * size) + x] = null)
         {
-            return 0;
+            return false;
         }
-        return 1;
+        return true;
     }
 
     method Mino getMino(int x, int y) {

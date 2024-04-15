@@ -99,9 +99,6 @@ class TetrisGame {
                 if (key = KeyCode.RightArrow()) {
                     do attemptMoveRight();
                 }
-                if (key = KeyCode.UpArrow()) {
-                    do attemptMoveUp();
-                }
                 if (key = KeyCode.DownArrow()) {
                     do attemptMoveDown();
                 }
@@ -222,17 +219,6 @@ class TetrisGame {
         if (gameBoard.isColliding(curX, curY, currentTetromino))
         {
             let curX = curX - 1; 
-        }
-        do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
-        return;
-    }
-
-    method void attemptMoveUp() {
-        do currentTetromino.hide(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
-        let curY = curY - 1; 
-        if (gameBoard.isColliding(curX, curY, currentTetromino))
-        {
-            let curY = curY + 1; 
         }
         do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
         return;
