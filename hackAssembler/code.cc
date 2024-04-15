@@ -62,7 +62,9 @@ uint16_t Code::comp(const std::string& mnemonic)
         {"D-M", 0b1010011},
         {"M-D", 0b1000111},
         {"D&M", 0b1000000},
+        {"M&D", 0b1000000},
         {"D|M", 0b1010101},
+        {"M|D", 0b1010101},
     };
 
     if (compMap.find(mnemonic) == compMap.end())

@@ -86,7 +86,6 @@ int main(int argc, char *argv[])
             CommandType commandType = parser.commandType();
             string arg1 = parser.arg1();
             int arg2 = parser.arg2();
-            cout << arg1 << endl;
             if (commandType == C_ARITHMETIC)
             {
                 codeWriter.writeArithmetic(arg1);

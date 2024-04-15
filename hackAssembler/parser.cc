@@ -53,14 +53,14 @@ void Parser::fillSymbolTable(const std::string& fileName)
 
             if (rightIt == currentLine.end())
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
 
             int symbolLen = (rightIt - leftIt) - 1;
 
             if (symbolLen < 1)
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
 
             string symbol = currentLine.substr(1, symbolLen);
@@ -86,7 +86,7 @@ void Parser::advance()
 {
     static const std::unordered_set<std::string> m_destSet {"M", "D", "MD", "A", "AM", "AD", "AMD"};
     static const std::unordered_set<std::string> m_compSet {"0", "1", "-1", "D", "A", "!D", "!A", "-D", "-A", "D+1", "A+1", "D-1", "A-1", "D+A", "D-A", "A-D", "D&A", "D|A",
-                                                            "M", "!M", "-M", "M+1", "M-1", "M+D", "D+M", "D-M", "M-D", "D&M", "D|M"};
+                                                            "M", "!M", "-M", "M+1", "M-1", "M+D", "D+M", "D-M", "M-D", "D&M", "M&D", "D|M", "M|D"};
     static const std::unordered_set<std::string> m_jumpSet {"JGT", "JEQ", "JGE", "JLT", "JNE", "JLE", "JMP"};
 
     string currentLine;
@@ -109,7 +109,7 @@ void Parser::advance()
         {
             if (strLen == 1 || currentLine[1] != '/')
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
 
             // Comment line detected. Advance to next line.
@@ -125,7 +125,7 @@ void Parser::advance()
         {
             if (strLen == 1)
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
 
             m_commandType = A_COMMAND;
@@ -160,14 +160,14 @@ void Parser::advance()
 
             if (rightIt == currentLine.end())
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
 
             int symbolLen = (rightIt - leftIt) - 1;
 
             if (symbolLen < 1)
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
             m_symbol = currentLine.substr(1, symbolLen);
             m_commandType = L_COMMAND;
@@ -182,12 +182,12 @@ void Parser::advance()
 
         if (eqIndex >= strLen && semiIndex >= strLen)
         {
-            throw runtime_error("Invalid syntax");
+            throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
         }
 
         if (eqIndex != strLen && semiIndex != strLen && semiIndex < eqIndex)
         {
-            throw runtime_error("Invalid syntax");
+            throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
         }
 
         if (eqIndex < strLen)
@@ -195,17 +195,17 @@ void Parser::advance()
             m_dest = currentLine.substr(0, eqIndex);
             if (m_destSet.count(m_dest) == 0)
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
 
             if (eqIndex == strLen - 1)
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
             m_comp = currentLine.substr(eqIndex + 1);
             if (m_compSet.count(m_comp) == 0)
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax" + m_comp);
             }
         }
 
@@ -213,18 +213,18 @@ void Parser::advance()
         {
             if (semiIndex == strLen - 1 || semiIndex == 0)
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
 
             m_comp = currentLine.substr(0, semiIndex);
             if (m_compSet.count(m_comp) == 0)
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
             m_jump = currentLine.substr(semiIndex + 1);
             if (m_jumpSet.count(m_jump) == 0)
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
         }
 
@@ -232,13 +232,13 @@ void Parser::advance()
         {
             if (eqIndex == strLen - 1)
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
             int compLen = (semiIndex - eqIndex) - 1;
             m_comp = currentLine.substr(semiIndex + 1, compLen);
             if (m_compSet.count(m_comp) == 0)
             {
-                throw runtime_error("Invalid syntax");
+                throw runtime_error("" + to_string(__LINE__) + "Invalid syntax");
             }
         }
 
