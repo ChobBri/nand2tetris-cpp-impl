@@ -10,7 +10,6 @@
  */
 class Mino {
     field int a;  // Can't allocate memory without at least one field variable
-    static int size;
 
     /** Constructs a new square game. */
     constructor Mino new() {
@@ -18,45 +17,28 @@ class Mino {
         return this;
     }
 
-    method void show(int x, int y) {
-        do Screen.setColor(true);
-        do Screen.drawLine(x, y, x + size - 1, y);
-        do Screen.drawLine(x, y, x, y + size - 1);
-        do Screen.drawLine(x + size - 1, y, x + size - 1, y + size - 1);
-        do Screen.drawLine(x, y + size - 1, x + size - 1, y + size - 1);
-        do Screen.setColor(true);
-        do Screen.drawLine(x + 2, y + 2, x + size - 1 - 2, y + 2);
-        do Screen.drawLine(x + 2, y + 2, x + 2, y + size - 1 - 2);
-        do Screen.drawLine(x + size - 1 - 2, y + 2, x + size - 1 - 2, y + size - 1 - 2);
-        do Screen.drawLine(x + 2, y + size - 1 - 2, x + size - 1 - 2, y + size - 1 - 2);
-        return;
-    }
-
-    method void hide(int x, int y) {
-        do Screen.setColor(false);
-        do Screen.drawLine(x, y, x + size - 1, y);
-        do Screen.drawLine(x, y, x, y + size - 1);
-        do Screen.drawLine(x + size - 1, y, x + size - 1, y + size - 1);
-        do Screen.drawLine(x, y + size - 1, x + size - 1, y + size - 1);
-        do Screen.setColor(false);
-        do Screen.drawLine(x + 2, y + 2, x + size - 1 - 2, y + 2);
-        do Screen.drawLine(x + 2, y + 2, x + 2, y + size - 1 - 2);
-        do Screen.drawLine(x + size - 1 - 2, y + 2, x + size - 1 - 2, y + size - 1 - 2);
-        do Screen.drawLine(x + 2, y + size - 1 - 2, x + size - 1 - 2, y + size - 1 - 2);
+    method void show(int x, int y, boolean setShow) {
+        var int x2, x7, x9, y2, y7, y9;
+        let x2 = x + 2;
+        let x7 = x + 7;
+        let x9 = x + 9;
+        let y2 = y + 2;
+        let y7 = y + 7;
+        let y9 = y + 9;
+        do Screen.setColor(setShow);
+        do Screen.drawLine(x, y, x9, y);
+        do Screen.drawLine(x, y, x, y9);
+        do Screen.drawLine(x9, y, x9, y9);
+        do Screen.drawLine(x, y9, x9, y9);
+        do Screen.drawLine(x2, y2, x7, y2);
+        do Screen.drawLine(x2, y2, x2, y7);
+        do Screen.drawLine(x7, y2, x7, y7);
+        do Screen.drawLine(x2, y7, x7, y7);
         return;
     }
 
     method void dispose() {
         do Memory.deAlloc(this);
-        return;
-    }
-
-    function int getSize() {
-        let size = 10;
-        return size;
-    }
-
-    method void update() {
         return;
     }
 }

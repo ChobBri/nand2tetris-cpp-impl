@@ -10,44 +10,46 @@
  */
 class Board {
     field Array minos;
+    field int c, r;
+    field int i;
+    field Mino mino;
 
-    field int width;
-    field int height;
-    field int cellCount;
 
     /** Constructs a new square game. */
     constructor Board new() {
-        var int i;
-        var int cellCount;
-        let width = 10;
-        let height = 20;
-        let cellCount = width * height;
-
         let i = 0;
-        let minos = Array.new(cellCount);
-        while (i < cellCount) {
+        let minos = Array.new(200);
+        while (i < 200) {
             let minos[i] = null;
             let i = i + 1;
         }
+
+        do Screen.setColor(true);
+        do Screen.drawLine(30, 30, 135, 30);
+        do Screen.drawLine(30, 30, 30, 235);
+        do Screen.drawLine(135, 30, 135, 235);
+        do Screen.drawLine(30, 235, 135, 235);
+        do Screen.drawLine(32, 32, 133, 32);
+        do Screen.drawLine(32, 32, 32, 233);
+        do Screen.drawLine(133, 32, 133, 233);
+        do Screen.drawLine(32, 233, 133, 233);
         return this;
     }
 
     method int processBoardClear() {
         var int clearCount;
-        var int c, r;
         var int srcindex;
-        var int dstindex;
-        var Mino mino;
+        var boolean isClear;
 
         let clearCount = 0;
         let srcindex = 0;
-        let dstindex = 0;
 
-        let r = height - 1;
+        let r = 19;
         while (r > -1) 
         {
+            let isClear = false;
             let c = 0;
-            while (c < width)
+            while (c < 10)
             {
                 if (hasMino(c, r))
                 {
@@ -55,52 +57,48 @@ class Board {
                 }
                 else
                 {
-                    let c = width + 1;
+                    let c = 11;
                 }
             }
 
-            if (c = width) {
+            if (c = 10) {
+                let isClear = true;
                 let clearCount = clearCount + 1;
-                let c = 0;
-                while (c < width)
-                {
-                    let srcindex = (r * width) + c; 
-                    let mino = minos[srcindex];
-                    do mino.hide(33 + (c * Mino.getSize()), 33 + (r * Mino.getSize()));
-                    do mino.dispose();
-                    let minos[srcindex] = null;
-                    let c = c + 1;
-                }
             }
-            else
+
+            let c = 0;
+            while (c < 10)
             {
-                let c = 0;
-                while (c < width)
-                {
-                    let srcindex = (r * width) + c; 
-                    let dstindex = ((r + clearCount) * width) + c;
-                    if (hasMino(c, r)) {
-                        let mino = minos[srcindex];
-                        do mino.hide(33 + (c * Mino.getSize()), 33 + (r * Mino.getSize()));
-                        let minos[dstindex] = minos[srcindex];
+                let srcindex = (r * 10) + c; 
+                let mino = minos[srcindex];
+                if (hasMino(c, r)) {
+                    do mino.show(33 + (c * 10), 33 + (r * 10), false);
+                    if (isClear)
+                    {
+                        do mino.dispose();
+                        let minos[srcindex] = null;
+                    }
+                    else
+                    {
+                        let minos[((r + clearCount) * 10) + c] = mino;
                         if (clearCount > 0)
                         {
                             let minos[srcindex] = null;
                         }
-                        do mino.show(33 + (c * Mino.getSize()), 33 + ((r + clearCount) * Mino.getSize()));
+                        do mino.show(33 + (c * 10), 33 + ((r + clearCount) * 10), true);
                     }
-                    let c = c + 1;
                 }
+                let c = c + 1;
             }
+
             let r = r - 1;
         }
 
         return clearCount;
     }
 
-    method int isColliding(int x, int y, Tetromino tetromino) {
+    method boolean isColliding(int x, int y, Tetromino tetromino) {
         var int index;
-        var int c, r;
         var int size;
 
         let c = x;
@@ -113,12 +111,12 @@ class Board {
                     if (isValidPos(c, r))
                     {
                         if (hasMino(c, r)) {
-                            return 1;
+                            return true;
                         }
                     }
                     else
                     {
-                        return 1;
+                        return true;
                     }
                 }
                 let c = c + 1;
@@ -126,86 +124,41 @@ class Board {
             let c = x;
             let r = r + 1;
         }
-        return 0;
+        return false;
     }
 
-    method void addMino(int x, int y, Mino mino) {
-        let minos[(y * width) + x] = mino;
+    method void addMino(int x, int y, Mino amino) {
+        let minos[(y * 10) + x] = amino;
         return;
     }
 
-    method int isValidPos(int x, int y) {
-        if (x < 0) {
-            return 0;
+    method boolean isValidPos(int x, int y) {
+        if ((x < 0) | (x > 9) | (y < 0) | (y > 19)) {
+            return false;
         }
-        if (x > (width - 1)) {
-            return 0;
-        }
-        if (y < 0) {
-            return 0;
-        }
-        if (y > (height - 1)) {
-            return 0;
-        }
-        return 1;
+        return true;
     }
 
-    method int hasMino(int x, int y) {
-        if (minos[(y * width) + x] = null)
+    method boolean hasMino(int x, int y) {
+        if (minos[(y * 10) + x] = null)
         {
-            return 0;
+            return false;
         }
-        return 1;
-    }
-
-    method int getWidth() {
-        return width;
-    }
-
-    method int getHeight() {
-        return height;
+        return true;
     }
 
     /** Disposes this game. */
     method void dispose() {
-        var Mino mino;
-        var int i;
-
         let i = 0;
-        while (i < cellCount) {
+        while (i < 200) {
             let mino = minos[i];
-            if (mino = null) {
+            if (~(mino = null)) {
                 do mino.dispose();
             }
             let i = i + 1;
         }
         do minos.dispose();
         do Memory.deAlloc(this);
-        return;
-    }
-
-    method void show(int x, int y) {
-        var int minoSize;
-        var int boardWidth, boardHeight;
-
-        let minoSize = Mino.getSize();
-        let boardWidth = (minoSize * width) + 6;
-        let boardHeight = (minoSize * height) + 6;
-
-        do Screen.setColor(true);
-        do Screen.drawLine(x, y, x + boardWidth - 1, y);
-        do Screen.drawLine(x, y, x, y + boardHeight - 1);
-        do Screen.drawLine(x + boardWidth - 1, y, x + boardWidth - 1, y + boardHeight - 1);
-        do Screen.drawLine(x, y + boardHeight - 1, x + boardWidth - 1, y + boardHeight - 1);
-        do Screen.setColor(true);
-        do Screen.drawLine(x + 2, y + 2, x + boardWidth - 1 - 2, y + 2);
-        do Screen.drawLine(x + 2, y + 2, x + 2, y + boardHeight - 1 - 2);
-        do Screen.drawLine(x + boardWidth - 1 - 2, y + 2, x + boardWidth - 1 - 2, y + boardHeight - 1 - 2);
-        do Screen.drawLine(x + 2, y + boardHeight - 1 - 2, x + boardWidth - 1 - 2, y + boardHeight - 1 - 2);
-        return;
-    }
-
-    method void hide(int x, int y) {
         return;
     }
 }
