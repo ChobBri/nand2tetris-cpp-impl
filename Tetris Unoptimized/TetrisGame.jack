@@ -29,6 +29,7 @@ class TetrisGame {
 
     /** Constructs a new square game. */
     constructor TetrisGame new() {
+        var Mino mino;
         let gameBoard = Board.new();
         do gameBoard.show(30, 30);
 
@@ -39,7 +40,7 @@ class TetrisGame {
         let curX = 3;
         let curY = 0;
 
-        do currentTetromino.show(63, 33, true);
+        do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
 
         let dropRate = 120;
         let dropTimer = 0;
@@ -60,16 +61,13 @@ class TetrisGame {
     method void dispose() {
         do gameBoard.dispose();
         do sevenBag.dispose();
-        if (~(currentTetromino = null))
-        {
-            do currentTetromino.dispose();
-        }
         do Memory.deAlloc(this);
         return;
     }
 
     /** Runs the game: handles the user's inputs and moves the square accordingly */
     method void run() {
+        var Mino mino;
          var char key;  // the key currently pressed by the user
          var char prevKey;
 
@@ -89,39 +87,21 @@ class TetrisGame {
 
                 let keyPressTick = keyPressTick + 1; 
 
-                do currentTetromino.show(33 + (curX * 10), 33 + (curY * 10), false);
-                if ((key = 122) | (key = 90)) { 
-                    do currentTetromino.rotate(false);
-                    if (gameBoard.isColliding(curX, curY, currentTetromino))
-                    {
-                        do currentTetromino.rotate(true);
-                    }
+                if ((key = KeyCode.z()) | (key = KeyCode.Z())) { 
+                    do attemptRotateLeft();
                 }
-                if ((key = 120) | (key = 88)) { 
-                    do currentTetromino.rotate(true);
-                    if (gameBoard.isColliding(curX, curY, currentTetromino))
-                    {
-                        do currentTetromino.rotate(false);
-                    }
+                if ((key = KeyCode.x()) | (key = KeyCode.X())) { 
+                    do attemptRotateRight();
                 }
-                if (key = 130) {
-                    let curX = curX - 1; 
-                    if (gameBoard.isColliding(curX, curY, currentTetromino))
-                    {
-                        let curX = curX + 1; 
-                    }
+                if (key = KeyCode.LeftArrow()) {
+                    do attemptMoveLeft();
                 }
-                if (key = 132) {
-                    let curX = curX + 1; 
-                    if (gameBoard.isColliding(curX, curY, currentTetromino))
-                    {
-                        let curX = curX - 1; 
-                    }
+                if (key = KeyCode.RightArrow()) {
+                    do attemptMoveRight();
                 }
-                if (key = 133) {
-                    do processBoardCollision();
+                if (key = KeyCode.DownArrow()) {
+                    do attemptMoveDown();
                 }
-                do currentTetromino.show(33 + (curX * 10), 33 + (curY * 10), true);
             }
             else
             {
@@ -146,7 +126,7 @@ class TetrisGame {
         var int size;
         var int clearCount;
 
-        do currentTetromino.show(33 + (curX * 10), 33 + (curY * 10), false);
+        do currentTetromino.hide(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
         let curY = curY + 1; 
         if (gameBoard.isColliding(curX, curY, currentTetromino))
         {
@@ -155,7 +135,7 @@ class TetrisGame {
             let r = curY;
             let size = currentTetromino.getSize(); 
             
-            do currentTetromino.show(33 + (curX * 10), 33 + (curY * 10), true);
+            do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
             while (r < (curY + size)) {
                 while (c < (curX + size)) {
                     if (currentTetromino.hasMino(c - curX, r - curY)) {
@@ -194,9 +174,58 @@ class TetrisGame {
 
         }
 
-        do currentTetromino.show(33 + (curX * 10), 33 + (curY * 10), true);
+        do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
 
         let dropTimer = 0;
+        return;
+    }
+
+    method void attemptRotateLeft() {
+        do currentTetromino.hide(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        do currentTetromino.rotateLeft();
+        if (gameBoard.isColliding(curX, curY, currentTetromino))
+        {
+            do currentTetromino.rotateRight();
+        }
+        do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        return;
+    }
+
+    method void attemptRotateRight() {
+        do currentTetromino.hide(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        do currentTetromino.rotateRight();
+        if (gameBoard.isColliding(curX, curY, currentTetromino))
+        {
+            do currentTetromino.rotateLeft();
+        }
+        do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        return;
+    }
+
+    method void attemptMoveLeft() {
+        do currentTetromino.hide(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        let curX = curX - 1; 
+        if (gameBoard.isColliding(curX, curY, currentTetromino))
+        {
+            let curX = curX + 1; 
+        }
+        do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        return;
+    }
+
+    method void attemptMoveRight() {
+        do currentTetromino.hide(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        let curX = curX + 1; 
+        if (gameBoard.isColliding(curX, curY, currentTetromino))
+        {
+            let curX = curX - 1; 
+        }
+        do currentTetromino.show(33 + (curX * Mino.getSize()), 33 + (curY * Mino.getSize()));
+        return;
+    }
+
+    method void attemptMoveDown() {
+        do processBoardCollision();
         return;
     }
 }

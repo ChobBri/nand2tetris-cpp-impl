@@ -11,12 +11,21 @@
 class Board {
     field Array minos;
 
+    field int width;
+    field int height;
+    field int cellCount;
+
     /** Constructs a new square game. */
     constructor Board new() {
         var int i;
+        var int cellCount;
+        let width = 10;
+        let height = 20;
+        let cellCount = width * height;
+
         let i = 0;
-        let minos = Array.new(200);
-        while (i < 200) {
+        let minos = Array.new(cellCount);
+        while (i < cellCount) {
             let minos[i] = null;
             let i = i + 1;
         }
@@ -34,11 +43,11 @@ class Board {
         let srcindex = 0;
         let dstindex = 0;
 
-        let r = 19;
+        let r = height - 1;
         while (r > -1) 
         {
             let c = 0;
-            while (c < 10)
+            while (c < width)
             {
                 if (hasMino(c, r))
                 {
@@ -46,18 +55,18 @@ class Board {
                 }
                 else
                 {
-                    let c = 10 + 1;
+                    let c = width + 1;
                 }
             }
 
-            if (c = 10) {
+            if (c = width) {
                 let clearCount = clearCount + 1;
                 let c = 0;
-                while (c < 10)
+                while (c < width)
                 {
-                    let srcindex = (r * 10) + c; 
+                    let srcindex = (r * width) + c; 
                     let mino = minos[srcindex];
-                    do mino.show(33 + (c * 10), 33 + (r * 10), false);
+                    do mino.hide(33 + (c * Mino.getSize()), 33 + (r * Mino.getSize()));
                     do mino.dispose();
                     let minos[srcindex] = null;
                     let c = c + 1;
@@ -66,19 +75,19 @@ class Board {
             else
             {
                 let c = 0;
-                while (c < 10)
+                while (c < width)
                 {
-                    let srcindex = (r * 10) + c; 
-                    let dstindex = ((r + clearCount) * 10) + c;
+                    let srcindex = (r * width) + c; 
+                    let dstindex = ((r + clearCount) * width) + c;
                     if (hasMino(c, r)) {
                         let mino = minos[srcindex];
-                        do mino.show(33 + (c * 10), 33 + (r * 10), false);
+                        do mino.hide(33 + (c * Mino.getSize()), 33 + (r * Mino.getSize()));
                         let minos[dstindex] = minos[srcindex];
                         if (clearCount > 0)
                         {
                             let minos[srcindex] = null;
                         }
-                        do mino.show(33 + (c * 10), 33 + ((r + clearCount) * 10), true);
+                        do mino.show(33 + (c * Mino.getSize()), 33 + ((r + clearCount) * Mino.getSize()));
                     }
                     let c = c + 1;
                 }
@@ -121,7 +130,7 @@ class Board {
     }
 
     method void addMino(int x, int y, Mino mino) {
-        let minos[(y * 10) + x] = mino;
+        let minos[(y * width) + x] = mino;
         return;
     }
 
@@ -129,24 +138,32 @@ class Board {
         if (x < 0) {
             return false;
         }
-        if (x > 9) {
+        if (x > (width - 1)) {
             return false;
         }
         if (y < 0) {
             return false;
         }
-        if (y > 19) {
+        if (y > (height - 1)) {
             return false;
         }
         return true;
     }
 
     method boolean hasMino(int x, int y) {
-        if (minos[(y * 10) + x] = null)
+        if (minos[(y * width) + x] = null)
         {
             return false;
         }
         return true;
+    }
+
+    method int getWidth() {
+        return width;
+    }
+
+    method int getHeight() {
+        return height;
     }
 
     /** Disposes this game. */
@@ -155,9 +172,9 @@ class Board {
         var int i;
 
         let i = 0;
-        while (i < 200) {
+        while (i < cellCount) {
             let mino = minos[i];
-            if (~(mino = null)) {
+            if (mino = null) {
                 do mino.dispose();
             }
             let i = i + 1;
@@ -168,16 +185,23 @@ class Board {
     }
 
     method void show(int x, int y) {
+        var int minoSize;
+        var int boardWidth, boardHeight;
+
+        let minoSize = Mino.getSize();
+        let boardWidth = (minoSize * width) + 6;
+        let boardHeight = (minoSize * height) + 6;
+
         do Screen.setColor(true);
-        do Screen.drawLine(x, y, x + 105, y);
-        do Screen.drawLine(x, y, x, y + 205);
-        do Screen.drawLine(x + 105, y, x + 105, y + 205);
-        do Screen.drawLine(x, y + 205, x + 105, y + 205);
+        do Screen.drawLine(x, y, x + boardWidth - 1, y);
+        do Screen.drawLine(x, y, x, y + boardHeight - 1);
+        do Screen.drawLine(x + boardWidth - 1, y, x + boardWidth - 1, y + boardHeight - 1);
+        do Screen.drawLine(x, y + boardHeight - 1, x + boardWidth - 1, y + boardHeight - 1);
         do Screen.setColor(true);
-        do Screen.drawLine(x + 2, y + 2, x + 103, y + 2);
-        do Screen.drawLine(x + 2, y + 2, x + 2, y + 203);
-        do Screen.drawLine(x + 103, y + 2, x + 103, y + 203);
-        do Screen.drawLine(x + 2, y + 203, x + 103, y + 203);
+        do Screen.drawLine(x + 2, y + 2, x + boardWidth - 1 - 2, y + 2);
+        do Screen.drawLine(x + 2, y + 2, x + 2, y + boardHeight - 1 - 2);
+        do Screen.drawLine(x + boardWidth - 1 - 2, y + 2, x + boardWidth - 1 - 2, y + boardHeight - 1 - 2);
+        do Screen.drawLine(x + 2, y + boardHeight - 1 - 2, x + boardWidth - 1 - 2, y + boardHeight - 1 - 2);
         return;
     }
 

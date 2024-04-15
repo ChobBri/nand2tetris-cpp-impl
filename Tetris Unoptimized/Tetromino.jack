@@ -10,14 +10,13 @@
  */
 
 class Tetromino {
-    field int size, len, i;
+    field int size;
     field Array pieceArea;
 
     constructor Tetromino new(int pieceType) {
-        if (pieceType = 0) {
+        if (pieceType = TEnum.IPiece()) {
             let size = 4;
-            let len = 16;
-            let pieceArea = Array.new(len);
+            let pieceArea = Array.new(size * size);
             do cleanPieceArea();
             let pieceArea[4] = Mino.new();
             let pieceArea[5] = Mino.new();
@@ -26,10 +25,9 @@ class Tetromino {
         }
         else
         {
-            if (pieceType = 1) {
+            if (pieceType = TEnum.JPiece()) {
                 let size = 3;
-                let len = 9;
-                let pieceArea = Array.new(9);
+                let pieceArea = Array.new(size * size);
                 do cleanPieceArea();
                 let pieceArea[0] = Mino.new();
                 let pieceArea[3] = Mino.new();
@@ -38,10 +36,9 @@ class Tetromino {
             }
             else
             {
-                if (pieceType = 2) {
+                if (pieceType = TEnum.LPiece()) {
                     let size = 3;
-                    let len = 9;
-                    let pieceArea = Array.new(9);
+                    let pieceArea = Array.new(size * size);
                     do cleanPieceArea();
                     let pieceArea[2] = Mino.new();
                     let pieceArea[3] = Mino.new();
@@ -50,10 +47,9 @@ class Tetromino {
                 }
                 else
                 {
-                    if (pieceType = 3) {
+                    if (pieceType = TEnum.OPiece()) {
                         let size = 2;
-                        let len = 4;
-                        let pieceArea = Array.new(4);
+                        let pieceArea = Array.new(size * size);
                         do cleanPieceArea();
                         let pieceArea[0] = Mino.new();
                         let pieceArea[1] = Mino.new();
@@ -62,10 +58,9 @@ class Tetromino {
                     }
                     else
                     {
-                        if (pieceType = 4) {
+                        if (pieceType = TEnum.SPiece()) {
                             let size = 3;
-                            let len = 9;
-                            let pieceArea = Array.new(9);
+                            let pieceArea = Array.new(size * size);
                             do cleanPieceArea();
                             let pieceArea[1] = Mino.new();
                             let pieceArea[2] = Mino.new();
@@ -74,10 +69,9 @@ class Tetromino {
                         }
                         else
                         {
-                            if (pieceType = 5) {
+                            if (pieceType = TEnum.TPiece()) {
                                 let size = 3;
-                                let len = 9;
-                                let pieceArea = Array.new(9);
+                                let pieceArea = Array.new(size * size);
                                 do cleanPieceArea();
                                 let pieceArea[1] = Mino.new();
                                 let pieceArea[3] = Mino.new();
@@ -86,10 +80,9 @@ class Tetromino {
                             }
                             else
                             {
-                                if (pieceType = 6) {
+                                if (pieceType = TEnum.ZPiece()) {
                                     let size = 3;
-                                    let len = 9;
-                                    let pieceArea = Array.new(9);
+                                    let pieceArea = Array.new(size * size);
                                     do cleanPieceArea();
                                     let pieceArea[0] = Mino.new();
                                     let pieceArea[1] = Mino.new();
@@ -106,7 +99,12 @@ class Tetromino {
     }
 
     method void cleanPieceArea() {
+        var int i;
+        var int len;
+
         let i = 0;
+        let len = size * size;
+
         while (i < len)
         {
             let pieceArea[i] = null;
@@ -134,44 +132,83 @@ class Tetromino {
         return size;
     }
 
-    method void rotate(boolean rightFlag) {
+    method void rotateLeft() {
         var Array pieceAreaCopy;
+        var int i;
+        var int len;
+        var Mino mino;
+
         var int c, r;
+
         let i = 0;
+        let len = size * size;
 
         let pieceAreaCopy = Array.new(size * size);
         while (i < len)
         {
-            let pieceAreaCopy[i] = pieceArea[i];
+            let mino = pieceArea[i];
+            let pieceAreaCopy[i] = mino;
             let i = i + 1;
         }
 
         let i = 0;
         while (i < len)
         {
+            let mino = pieceAreaCopy[i];
             let r = i / size;
             let c = i - (r * size);
 
-            if (rightFlag)
-            {
-                let pieceArea[(size - r - 1) + (c * size)] = pieceAreaCopy[i];
-            }
-            else
-            {
-                let pieceArea[r + ((size - c - 1) * size)] = pieceAreaCopy[i];
-            }
-
+            let pieceArea[r + ((size - c - 1) * size)] = pieceAreaCopy[i];
             let i = i + 1;
         }
         do pieceAreaCopy.dispose();
         return;    
     }
 
-    method void show(int x, int y, boolean setShow) {
+    method void rotateRight() {
+        var Array pieceAreaCopy;
+        var int i;
+        var int len;
         var Mino mino;
+
         var int c, r;
 
         let i = 0;
+        let len = size * size;
+
+        let pieceAreaCopy = Array.new(size * size);
+        while (i < len)
+        {
+            let mino = pieceArea[i];
+            let pieceAreaCopy[i] = mino;
+            let i = i + 1;
+        }
+
+        let i = 0;
+        while (i < len)
+        {
+            let mino = pieceAreaCopy[i];
+            let r = i / size;
+            let c = i - (r * size);
+
+            let pieceArea[(size - r - 1) + (c * size)] = pieceAreaCopy[i];
+            let i = i + 1;
+        }
+        do pieceAreaCopy.dispose();
+
+        return;    
+    }
+
+
+    method void show(int x, int y) {
+        var int i;
+        var int len;
+        var Mino mino;
+
+        var int c, r;
+
+        let i = 0;
+        let len = size * size;
 
         while (i < len)
         {
@@ -180,7 +217,31 @@ class Tetromino {
             {
                 let r = i / size;
                 let c = i - (r * size);
-                do mino.show(x + (c * 10), y + (r * 10), setShow);
+                do mino.show(x + (c * Mino.getSize()), y + (r * Mino.getSize()));
+            }
+            let i = i + 1;
+        }
+        return;
+    }
+
+    method void hide(int x, int y) {
+        var int i;
+        var int len;
+        var Mino mino;
+
+        var int c, r;
+
+        let i = 0;
+        let len = size * size;
+
+        while (i < len)
+        {
+            let mino = pieceArea[i];
+            if (~(mino = null))
+            {
+                let r = i / size;
+                let c = i - (r * size);
+                do mino.hide(x + (c * Mino.getSize()), y + (r * Mino.getSize()));
             }
             let i = i + 1;
         }
@@ -188,8 +249,12 @@ class Tetromino {
     }
 
     method void dispose() {
+        var int i;
+        var int len;
         var Mino mino;
+
         let i = 0;
+        let len = size * size;
 
         while (i < len)
         {
