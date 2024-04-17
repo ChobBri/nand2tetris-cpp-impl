@@ -252,16 +252,16 @@ class Output {
     function void printInt(int i) {
         var String s;
         var int len;
-        var int i;
+        var int ind;
         let s = String.new(20);
         do s.setInt(i);
         let len = s.length();
 
-        let i = 0;
-        while (i < len)
+        let ind = 0;
+        while (ind < len)
         {
-            do Output.printChar(s.charAt(i));
-            let i = i + 1;
+            do Output.printChar(s.charAt(ind));
+            let ind = ind + 1;
         }
         do s.dispose();
         return;
