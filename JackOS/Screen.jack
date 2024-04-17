@@ -10,18 +10,20 @@
  */
 class Screen {
     static boolean colorState;
+    static Array powersOfTwo;
     /** Initializes the Screen. */
     function void init() {
+        var int power, i;
         let colorState = true;
-        return;
-    }
-
-    /** Erases the entire screen. */
-    function void clearScreen() {
-        var boolean tempState;
-        let tempState = colorState;
-        do drawRectangle(0, 0, 511, 255);
-        let colorState = tempState;
+        let power = 1;
+        let i = 0;
+        let powersOfTwo = Array.new(16);
+        while (i < 16)
+        {
+            let powersOfTwo[i] = power;
+            let power = power + power;
+            let i = i + 1;
+        }
         return;
     }
 
@@ -37,125 +39,44 @@ class Screen {
         var int address, value;
         var int mod;
         var int xdiv;
+        var int pow;
         let xdiv = x / 16;
         let address = (y * 32) + xdiv + 16384;
         let value = Memory.peek(address);
         let mod = x - (xdiv * 16);
-        if (Math.bit(value, mod) = colorState)
+        if (((value & powersOfTwo[mod]) = 0) = colorState)
         {
-            return;
+            let pow = powersOfTwo[mod];
+
+            if (~colorState)
+            {
+                let pow = -pow;
+            }
+            do Memory.poke(address, value + pow);
         }
 
-        if (colorState)
-        {
-            let value = value + Math.pow2(mod);
-        }
-        else
-        {
-            let value = value - Math.pow2(mod);
-        }
-
-        do Memory.poke(address, value);
         return;
     }
 
     /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
     function void drawLine(int x1, int y1, int x2, int y2) {
-        var int dx, dy;
-        var int xinc, yinc;
-        var int a, b, diff;
-        var int x, y;
-        var int dx1, dy1;
-
-        if (y2 < y1)
+        if (x1 = x2)
         {
-            let dy = y2;
-            let y2 = y1;
-            let y1 = dy;
-
-            let dx = x2;
-            let x2 = x1;
-            let x1 = dx;
-        }
-
-        let dx = x2 - x1;
-        let dy = y2 - y1;
-
-        let a = 0;
-        let b = 0;
-        let diff = 0;
-
-        let dy1 = dy + 1;
-        if (dx = 0)
-        {
-            while (b < dy1)
+            let y2 = y2 + 1;
+            while (y1 < y2)
             {
-                do Screen.drawPixel(x1, y1 + b);
-                let b = b + 1;
+                do Screen.drawPixel(x1, y1);
+                let y1 = y1 + 1;
             }
+            return;
         }
 
-        if (dx > 0)
+        let x2 = x2 + 1;
+        // assume dy = 0
+        while (x1 < x2)
         {
-            let xinc = 1;
-        }
-        else
-        {
-            let dx = -dx;
-            let xinc = -1;
-        }
-
-        let dx1 = dx + 1;
-
-        if (dy = 0)
-        {
-            while ((a < dx1) & (a > -dx1))
-            {
-                do Screen.drawPixel(x1 + a, y1);
-                let a = a + xinc;
-            }
-        }
-
-        while ((a < dx1) & (b < dy1) & (a > -dx1))
-        {
-            do Screen.drawPixel(x1 + a, y1 + b);
-            if (diff < 0)
-            {
-                let a = a + xinc;
-                let diff = diff + dy;
-            }
-            else
-            {
-                let b = b + 1;
-                let diff = diff - dx;
-            }
-        }
-        return;
-    }
-
-    /** Draws a filled rectangle whose top left corner is (x1, y1)
-     *  and bottom right corner is (x2,y2), using the current color. */
-    function void drawRectangle(int x1, int y1, int x2, int y2) {
-        var int x;
-        let x = x1;
-        while (x < x2)
-        {
-            do Screen.drawLine(x, y1, x, y2);
-            let x = x + 1;
-        }
-        return;
-    }
-
-    /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
-    function void drawCircle(int x, int y, int r) {
-        var int dx, dy;
-        let dy = -r;
-
-        while (dy < r)
-        {
-            let dx = Math.sqrt((r * r) - (dy * dy));
-            do Screen.drawLine(x - dx, y + dy, x + dx, y + dy);
-            let dy = dy + 1;
+            do Screen.drawPixel(x1, y1);
+            let x1 = x1 + 1;
         }
         return;
     }

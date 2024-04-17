@@ -17,116 +17,88 @@ class Tetromino {
         if (pieceType = 0) {
             let size = 4;
             let len = 16;
-            let pieceArea = Array.new(len);
-            do cleanPieceArea();
-            let pieceArea[4] = Mino.new();
-            let pieceArea[5] = Mino.new();
-            let pieceArea[6] = Mino.new();
-            let pieceArea[7] = Mino.new();
         }
-        else
-        {
-            if (pieceType = 1) {
-                let size = 3;
-                let len = 9;
-                let pieceArea = Array.new(9);
-                do cleanPieceArea();
-                let pieceArea[0] = Mino.new();
-                let pieceArea[3] = Mino.new();
-                let pieceArea[4] = Mino.new();
-                let pieceArea[5] = Mino.new();
-            }
-            else
-            {
-                if (pieceType = 2) {
-                    let size = 3;
-                    let len = 9;
-                    let pieceArea = Array.new(9);
-                    do cleanPieceArea();
-                    let pieceArea[2] = Mino.new();
-                    let pieceArea[3] = Mino.new();
-                    let pieceArea[4] = Mino.new();
-                    let pieceArea[5] = Mino.new();
-                }
-                else
-                {
-                    if (pieceType = 3) {
-                        let size = 2;
-                        let len = 4;
-                        let pieceArea = Array.new(4);
-                        do cleanPieceArea();
-                        let pieceArea[0] = Mino.new();
-                        let pieceArea[1] = Mino.new();
-                        let pieceArea[2] = Mino.new();
-                        let pieceArea[3] = Mino.new();
-                    }
-                    else
-                    {
-                        if (pieceType = 4) {
-                            let size = 3;
-                            let len = 9;
-                            let pieceArea = Array.new(9);
-                            do cleanPieceArea();
-                            let pieceArea[1] = Mino.new();
-                            let pieceArea[2] = Mino.new();
-                            let pieceArea[3] = Mino.new();
-                            let pieceArea[4] = Mino.new();
-                        }
-                        else
-                        {
-                            if (pieceType = 5) {
-                                let size = 3;
-                                let len = 9;
-                                let pieceArea = Array.new(9);
-                                do cleanPieceArea();
-                                let pieceArea[1] = Mino.new();
-                                let pieceArea[3] = Mino.new();
-                                let pieceArea[4] = Mino.new();
-                                let pieceArea[5] = Mino.new();
-                            }
-                            else
-                            {
-                                if (pieceType = 6) {
-                                    let size = 3;
-                                    let len = 9;
-                                    let pieceArea = Array.new(9);
-                                    do cleanPieceArea();
-                                    let pieceArea[0] = Mino.new();
-                                    let pieceArea[1] = Mino.new();
-                                    let pieceArea[4] = Mino.new();
-                                    let pieceArea[5] = Mino.new();
-                                }
-                            }
-                        }
-                    }
-                } 
-            }
-        } 
-        return this;
-    }
 
-    method void cleanPieceArea() {
+        if (pieceType = 1) {
+            let size = 2;
+            let len = 4;
+        }
+
+        if (pieceType > 1) {
+            let size = 3;
+            let len = 9;
+        }
+
+        let pieceArea = Array.new(len);
         let i = 0;
         while (i < len)
         {
             let pieceArea[i] = null;
             let i = i + 1;
         }
-        return;
+    
+        if (pieceType = 0) {
+            let pieceArea[4] = Mino.new();
+            let pieceArea[5] = Mino.new();
+            let pieceArea[6] = Mino.new();
+            let pieceArea[7] = Mino.new();
+        }
+
+        if (pieceType = 1) {
+            let pieceArea[0] = Mino.new();
+            let pieceArea[1] = Mino.new();
+            let pieceArea[2] = Mino.new();
+            let pieceArea[3] = Mino.new();
+        }
+
+
+        if (pieceType = 2) {
+            let pieceArea[2] = Mino.new();
+            let pieceArea[3] = Mino.new();
+            let pieceArea[4] = Mino.new();
+            let pieceArea[5] = Mino.new();
+        }
+
+        if (pieceType = 3) {
+            let pieceArea[0] = Mino.new();
+            let pieceArea[3] = Mino.new();
+            let pieceArea[4] = Mino.new();
+            let pieceArea[5] = Mino.new();
+        }
+
+        if (pieceType = 4) {
+            let pieceArea[1] = Mino.new();
+            let pieceArea[2] = Mino.new();
+            let pieceArea[3] = Mino.new();
+            let pieceArea[4] = Mino.new();
+        }
+
+        if (pieceType = 5) {
+            let pieceArea[1] = Mino.new();
+            let pieceArea[3] = Mino.new();
+            let pieceArea[4] = Mino.new();
+            let pieceArea[5] = Mino.new();
+        }
+
+        if (pieceType = 6) {
+            let pieceArea[0] = Mino.new();
+            let pieceArea[1] = Mino.new();
+            let pieceArea[4] = Mino.new();
+            let pieceArea[5] = Mino.new();
+        }
+
+        return this;
     }
 
     method boolean hasMino(int x, int y) {
-        if (pieceArea[(y * size) + x] = null)
-        {
-            return false;
-        }
-        return true;
+        return ~(pieceArea[(y * size) + x] = null);
     }
 
     method Mino getMino(int x, int y) {
         var Mino mino;
-        let mino = pieceArea[(y * size) + x];
-        let pieceArea[(y * size) + x] = null;
+        let x = (y * size) + x;
+        let mino = pieceArea[x];
+        let pieceArea[x] = null;
         return mino;
     }
 
@@ -147,22 +119,27 @@ class Tetromino {
         }
 
         let i = 0;
-        while (i < len)
+        let r = 0;
+        while (r < size)
         {
-            let r = i / size;
-            let c = i - (r * size);
-
-            if (rightFlag)
+            let c = 0;
+            while (c < size)
             {
-                let pieceArea[(size - r - 1) + (c * size)] = pieceAreaCopy[i];
+                if (rightFlag)
+                {
+                    let pieceArea[(size - r - 1) + (c * size)] = pieceAreaCopy[i];
+                }
+                else
+                {
+                    let pieceArea[r + ((size - c - 1) * size)] = pieceAreaCopy[i];
+                }
+                let c = c + 1;
+                let i = i + 1;
             }
-            else
-            {
-                let pieceArea[r + ((size - c - 1) * size)] = pieceAreaCopy[i];
-            }
-
-            let i = i + 1;
+            let c = 0;
+            let r = r + 1;
         }
+
         do pieceAreaCopy.dispose();
         return;    
     }
@@ -170,19 +147,30 @@ class Tetromino {
     method void show(int x, int y, boolean setShow) {
         var Mino mino;
         var int c, r;
+        var int xstart;
+        var int xend, yend;
+        var int s10;
+
+        let s10 = size * 10;
+        let xend = x + s10;
+        let yend = y + s10;
+        let xstart = x;
 
         let i = 0;
-
-        while (i < len)
+        while (y < yend)
         {
-            let mino = pieceArea[i];
-            if (~(mino = null))
+            while (x < xend)
             {
-                let r = i / size;
-                let c = i - (r * size);
-                do mino.show(x + (c * 10), y + (r * 10), setShow);
+                let mino = pieceArea[i];
+                if (~(mino = null))
+                {
+                    do mino.show(x, y, setShow);
+                }
+                let x = x + 10;
+                let i = i + 1;
             }
-            let i = i + 1;
+            let x = xstart;
+            let y = y + 10;
         }
         return;
     }

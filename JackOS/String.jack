@@ -11,13 +11,12 @@
  */
 class String {
     field Array str;
-    field int len, maxlen;
+    field int len;
     /** constructs a new empty string with a maximum length of maxLength
      *  and initial length of 0. */
     constructor String new(int maxLength) {
         let len = 0;
-        let maxlen = maxLength;
-        let str = Memory.alloc(Math.max(1, maxLength));
+        let str = Memory.alloc(maxLength);
         return this;
     }
 
@@ -38,12 +37,6 @@ class String {
         return str[j];
     }
 
-    /** Sets the character at the j-th location of this string to c. */
-    method void setCharAt(int j, char c) {
-        let str[j] = c;
-        return;
-    }
-
     /** Appends c to this string's end and returns this string. */
     method String appendChar(char c) {
         let str[len] = c;
@@ -51,70 +44,18 @@ class String {
         return this;
     }
 
-    /** Erases the last character from this string. */
-    method void eraseLastChar() {
-        let len = len - 1;
-        return;
-    }
-
-    /** Returns the integer value of this string, 
-     *  until a non-digit character is detected. */
-    method int intValue() {
-        var int i;
-        var int ret;
-        var char c;
-        var boolean isNeg;
-        let i = 0;
-        let ret = 0;
-        let isNeg = false;
-        if (str[0] = 45)
-        {
-            let isNeg = true;
-            let i = i + 1;
-        }
-
-        while (i < len)
-        {
-            let c = str[i];
-            if ((c < 48) | (c > 57))
-            {
-                let i = len;
-            }
-            else
-            {
-                let ret = (ret * 10) + (c - 48);
-            }
-            let i = i + 1;
-        }
-
-        if (isNeg)
-        {
-            return -ret;
-        }
-
-        return ret;
-    }
-
     /** Sets this string to hold a representation of the given value. */
     method void setInt(int val) {
-        var int lastDigit;
-        var int absVal;
         var int i;
         var int c;
 
         let len = 0;
-        let absVal = Math.abs(val);
 
         let i = 0;
-        let lastDigit = absVal - ((absVal / 10) * 10);
-        let c = lastDigit + 48;
+        let c = val - ((val / 10) * 10) + 48;
 
-        if ((absVal < 10))
+        if (val < 10)
         {
-            if (val < 0)
-            {
-                do appendChar(45);
-            }
             do appendChar(c);
             return;
         }
@@ -125,20 +66,5 @@ class String {
         }
 
         return;
-    }
-
-    /** Returns the new line character. */
-    function char newLine() {
-        return 128;
-    }
-
-    /** Returns the backspace character. */
-    function char backSpace() {
-        return 129;
-    }
-
-    /** Returns the double quote (") character. */
-    function char doubleQuote() {
-        return 34;
     }
 }

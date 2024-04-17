@@ -10,17 +10,15 @@
  *  using calls to OS functions in this class.
  */
 class Math {
-    static int n;             // Number of bits used for representing a two's complement integer
     static Array powersOfTwo; // Stores 2^0, 2^1, 2^2,..., 2^(n-1)
 
     // Initializes the Math library.
     function void init() {
         var int power, i;
-        let n = 16;
         let power = 1;
         let i = 0;
-        let powersOfTwo = Array.new(n);
-        while (i < n)
+        let powersOfTwo = Array.new(16);
+        while (i < 16)
         {
             let powersOfTwo[i] = power;
             let power = power + power;
@@ -35,19 +33,19 @@ class Math {
      *  Thus, in Jack, x * y and Math.multiply(x,y) return the same value. */
     function int multiply(int x, int y) {
         var int sum, shiftedx;
-        var int i;
+        var int pow;
 
         let sum = 0;
         let shiftedx = x;
-        let i = 0;
-        while (i < n)
+        let pow = 1;
+        while (pow > 0)
         {
-            if (Math.bit(y, i))
+            if ((y & pow) > 0)
             {
                 let sum = sum + shiftedx;
             }
+            let pow = pow + pow;
             let shiftedx = shiftedx + shiftedx;
-            let i = i + 1;
         }
         return sum;
     }
@@ -59,101 +57,30 @@ class Math {
     function int divide(int x, int y) {
         var int q, r;
         var int i;
-        var int negCount;
-        let i = n - 1;
+        var int ym1;
+        var int neg1;
+        var int pow;
+
+        let i = 15;
+        let neg1 = -1;
         
-        let negCount = 0;
-
-        if (x < 0)
+        let ym1 = y - 1;
+        while (i > neg1)
         {
-            let x = -x;
-            let negCount = negCount + 1;
-        }
-
-        if (y < 0)
-        {
-            let y = -y;
-            let negCount = negCount + 1;
-        }
-
-        while (i > -1)
-        {
+            let pow = powersOfTwo[i];
             let r = r + r;
-            if (Math.bit(x, i))
+            if ((x & pow) > 0)
             {
                 let r = r + 1;
             }
-            if (r > (y - 1))
+            if (r > ym1)
             {
                 let r = r - y;
-                let q = q + powersOfTwo[i];
+                let q = q + pow;
             }
             let i = i - 1;
-        }
-
-        if (negCount = 1)
-        {
-            return -q;
         }
 
         return q;
-    }
-
-    /** Returns the integer part of the square root of x. */
-    function int sqrt(int x) {
-        var int y;
-        var int i;
-        var int power, power2;
-
-        let y = 0;
-        let i = (n / 2) - 1;
-        while (i > -1)
-        {
-            let power = y + powersOfTwo[i];
-            let power2 = power * power;
-            if (((power2 - 1) < x) & (power2 > 0))
-            {
-                let y = power;
-            }
-            let i = i - 1;
-        }
-        return y;
-    }
-
-    /** Returns the greater value. */
-    function int max(int a, int b) {
-        if (a > b)
-        {
-            return a;
-        }
-        return b;
-    }
-
-    /** Returns the smaller value. */
-    function int min(int a, int b) {
-        if (a < b)
-        {
-            return a;
-        }
-        return b;
-    }
-
-    /** Returns the absolute value of x. */
-    function int abs(int x) {
-        if (x < 0)
-        {
-            return -x;
-        }
-        return x;
-    }
-
-    function boolean bit(int x, int i)
-    {
-        return ~((x & powersOfTwo[i]) = 0);
-    }
-
-    function int pow2(int x)
-    {
-        return powersOfTwo[x];
     }
 }

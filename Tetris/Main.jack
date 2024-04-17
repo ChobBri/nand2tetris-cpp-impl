@@ -4,7 +4,7 @@ class Main {
         var TetrisGame game;
         let game = TetrisGame.new();
         do game.run();
-        do game.dispose();
+        //do game.dispose();
         return;
     }
 }

@@ -40,6 +40,9 @@ class Board {
         var int clearCount;
         var int srcindex;
         var boolean isClear;
+        var int c10;
+        var int r10;
+        var int r10c;
 
         let clearCount = 0;
         let srcindex = 0;
@@ -69,10 +72,12 @@ class Board {
             let c = 0;
             while (c < 10)
             {
-                let srcindex = (r * 10) + c; 
+                let r10 = r * 10;
+                let srcindex = r10 + c; 
                 let mino = minos[srcindex];
                 if (hasMino(c, r)) {
-                    do mino.show(33 + (c * 10), 33 + (r * 10), false);
+                    let c10 = 33 + (c * 10);
+                    do mino.show(c10, 33 + r10, false);
                     if (isClear)
                     {
                         do mino.dispose();
@@ -80,17 +85,17 @@ class Board {
                     }
                     else
                     {
-                        let minos[((r + clearCount) * 10) + c] = mino;
+                        let r10c = (r + clearCount) * 10;
+                        let minos[r10c + c] = mino;
                         if (clearCount > 0)
                         {
                             let minos[srcindex] = null;
                         }
-                        do mino.show(33 + (c * 10), 33 + ((r + clearCount) * 10), true);
+                        do mino.show(c10, 33 + r10c, true);
                     }
                 }
                 let c = c + 1;
             }
-
             let r = r - 1;
         }
 
@@ -100,28 +105,35 @@ class Board {
     method boolean isColliding(int x, int y, Tetromino tetromino) {
         var int index;
         var int size;
+        var int xp, yp;
 
-        let c = x;
-        let r = y;
+        let c = 0;
+        let r = 0;
         let size = tetromino.getSize();
 
-        while (r < (y + size)) {
-            while (c < (x + size)) {
-                if (tetromino.hasMino(c - x, r - y)) {
-                    if (isValidPos(c, r))
+        while (r < size) {
+            while (c < size) {
+                if (tetromino.hasMino(c, r)) {
+                    let xp = x + c;
+                    let yp = y + r;
+                    
+                    if ((xp < 0) | (xp > 9))
                     {
-                        if (hasMino(c, r)) {
-                            return true;
-                        }
+                        return true;
                     }
-                    else
+
+                    if ((yp < 0) | (yp > 19))
                     {
+                        return true;
+                    }
+
+                    if (hasMino(xp, yp)) {
                         return true;
                     }
                 }
                 let c = c + 1;
             }
-            let c = x;
+            let c = 0;
             let r = r + 1;
         }
         return false;
@@ -132,35 +144,24 @@ class Board {
         return;
     }
 
-    method boolean isValidPos(int x, int y) {
-        if ((x < 0) | (x > 9) | (y < 0) | (y > 19)) {
-            return false;
-        }
-        return true;
-    }
-
     method boolean hasMino(int x, int y) {
-        if (minos[(y * 10) + x] = null)
-        {
-            return false;
-        }
-        return true;
+        return ~(minos[(y * 10) + x] = null);
     }
 
     /** Disposes this game. */
-    method void dispose() {
-        let i = 0;
-        while (i < 200) {
-            let mino = minos[i];
-            if (~(mino = null)) {
-                do mino.dispose();
-            }
-            let i = i + 1;
-        }
-        do minos.dispose();
-        do Memory.deAlloc(this);
-        return;
-    }
+    //method void dispose() {
+    //    let i = 0;
+    //    while (i < 200) {
+    //        let mino = minos[i];
+    //        if (~(mino = null)) {
+    //            do mino.dispose();
+    //        }
+    //        let i = i + 1;
+    //    }
+    //    do minos.dispose();
+    //    do Memory.deAlloc(this);
+    //    return;
+    //}
 }
 
 
