@@ -1,9 +1,24 @@
 all: Tetris
 
-Tetris: JackCompiler.exe VMtranslator.exe hackAssembler.exe
+clean:
+	rm JackCompiler/*.o
+	rm JackCompiler/*.exe
+	rm VMtranslator/*.o
+	rm VMtranslator/*.exe
+	rm HackAssembler/*.o
+	rm HackAssembler/*.exe
+
+	rm JackOS/*.vm
+	rm Tetris/*.vm
+	rm Tetris/*.asm
+
+	rm *.hack
+
+Tetris: JackCompiler.exe VMtranslator.exe HackAssembler.exe
 	./JackCompiler/JackCompiler.exe Tetris
+	./JackCompiler/JackCompiler.exe JackOS
 	./VMtranslator/VMtranslator.exe Tetris
-	./hackAssembler/hackAssembler.exe Tetris/Tetris.asm
+	./HackAssembler/HackAssembler.exe Tetris/Tetris.asm
 
 JackCompiler.exe:
 	mingw32-make.exe -C JackCompiler/
@@ -11,5 +26,7 @@ JackCompiler.exe:
 VMtranslator.exe:
 	mingw32-make.exe -C VMtranslator/
 
-hackAssembler.exe:
-	mingw32-make.exe -C hackAssembler/
+HackAssembler.exe:
+	mingw32-make.exe -C HackAssembler/
+
+

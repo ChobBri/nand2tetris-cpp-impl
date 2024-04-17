@@ -1,7 +1,7 @@
 all: hackAssembler
 
 hackAssembler: hackAssembler.o parser.o code.o symbolTable.o
-	g++ -o hackAssembler hackAssembler.o parser.o code.o symbolTable.o
+	g++ -o HackAssembler hackAssembler.o parser.o code.o symbolTable.o
 
 parser.o: parser.cc parser.h
 	g++ -c parser.cc
