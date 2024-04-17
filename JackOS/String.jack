@@ -53,7 +53,7 @@ class String {
 
     /** Erases the last character from this string. */
     method void eraseLastChar() {
-        let len = Math.max(0, len - 1);
+        let len = len - 1;
         return;
     }
 
@@ -67,7 +67,7 @@ class String {
         let i = 0;
         let ret = 0;
         let isNeg = false;
-        if (str[i] = 45)
+        if (str[0] = 45)
         {
             let isNeg = true;
             let i = i + 1;
