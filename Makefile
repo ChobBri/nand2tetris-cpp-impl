@@ -8,7 +8,6 @@ clean:
 	rm HackAssembler/*.o
 	rm HackAssembler/*.exe
 
-	rm JackOS/*.vm
 	rm Tetris/*.vm
 	rm Tetris/*.asm
 
@@ -17,6 +16,7 @@ clean:
 Tetris: JackCompiler.exe VMtranslator.exe HackAssembler.exe
 	./JackCompiler/JackCompiler.exe Tetris
 	./JackCompiler/JackCompiler.exe JackOS
+	mv JackOS/*.vm Tetris/
 	./VMtranslator/VMtranslator.exe Tetris
 	./HackAssembler/HackAssembler.exe Tetris/Tetris.asm
 
