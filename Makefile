@@ -21,12 +21,12 @@ Tetris: JackCompiler.exe VMtranslator.exe HackAssembler.exe
 	./HackAssembler/HackAssembler.exe Tetris/Tetris.asm
 
 JackCompiler.exe:
-	mingw32-make.exe -C JackCompiler/
+	$(MAKE) -C JackCompiler/
 
 VMtranslator.exe:
-	mingw32-make.exe -C VMtranslator/
+	$(MAKE) -C VMtranslator/
 
 HackAssembler.exe:
-	mingw32-make.exe -C HackAssembler/
+	$(MAKE) -C HackAssembler/
 
 
