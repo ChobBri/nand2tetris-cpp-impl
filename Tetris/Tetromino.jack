@@ -146,7 +146,6 @@ class Tetromino {
 
     method void show(int x, int y, boolean setShow) {
         var Mino mino;
-        var int c, r;
         var int xstart;
         var int xend, yend;
         var int s10;

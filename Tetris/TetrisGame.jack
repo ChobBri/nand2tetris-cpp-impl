@@ -190,7 +190,6 @@ class TetrisGame {
 
     method void processBoardCollision() {
         var int c, r;
-        var int len;
         var int size;
         var int clearCount;
 

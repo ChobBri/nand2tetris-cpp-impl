@@ -103,7 +103,6 @@ class Board {
     }
 
     method boolean isColliding(int x, int y, Tetromino tetromino) {
-        var int index;
         var int size;
         var int xp, yp;
 

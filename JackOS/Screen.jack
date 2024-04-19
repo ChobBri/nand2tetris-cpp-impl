@@ -44,10 +44,9 @@ class Screen {
         let address = (y * 32) + xdiv + 16384;
         let value = Memory.peek(address);
         let mod = x - (xdiv * 16);
-        if (((value & powersOfTwo[mod]) = 0) = colorState)
+        let pow = powersOfTwo[mod];
+        if (((value & pow) = 0) = colorState)
         {
-            let pow = powersOfTwo[mod];
-
             if (~colorState)
             {
                 let pow = -pow;

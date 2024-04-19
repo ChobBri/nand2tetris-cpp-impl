@@ -572,13 +572,13 @@ void CompilationEngine::compileIf()
     int currentLabelCounter = m_labelCounter;
     m_labelCounter += 2;
     m_vmWriter->writeArithmetic(VMWriter::ArithmeticCommand::NOT);
-    m_vmWriter->writeIf("L" + to_string(currentLabelCounter));
+    m_vmWriter->writeIf(m_className + ".L" + to_string(currentLabelCounter));
     writeSymbol("{");
     compileStatements();
-    m_vmWriter->writeGoto("L" + to_string(currentLabelCounter + 1));
+    m_vmWriter->writeGoto(m_className + ".L" + to_string(currentLabelCounter + 1));
     writeSymbol("}");
 
-    m_vmWriter->writeLabel("L" + to_string(currentLabelCounter));
+    m_vmWriter->writeLabel(m_className + ".L" + to_string(currentLabelCounter));
     auto isElsePossible = [this]() -> bool {
         if (m_tokenizer->tokenType() == JackTokenizer::TokenType::KEYWORD)
         {
@@ -594,7 +594,7 @@ void CompilationEngine::compileIf()
         compileStatements();
         writeSymbol("}");
     }
-    m_vmWriter->writeLabel("L" + to_string(currentLabelCounter + 1));
+    m_vmWriter->writeLabel(m_className + ".L" + to_string(currentLabelCounter + 1));
 
 }
 
@@ -604,16 +604,16 @@ void CompilationEngine::compileWhile()
     writeSymbol("(");
     int currentLabelCounter = m_labelCounter;
     m_labelCounter += 2;
-    m_vmWriter->writeLabel("L" + to_string(currentLabelCounter));
+    m_vmWriter->writeLabel(m_className + ".L" + to_string(currentLabelCounter));
     compileExpression();
     m_vmWriter->writeArithmetic(VMWriter::ArithmeticCommand::NOT);
-    m_vmWriter->writeIf("L" + to_string(currentLabelCounter + 1));
+    m_vmWriter->writeIf(m_className + ".L" + to_string(currentLabelCounter + 1));
     writeSymbol(")");
     writeSymbol("{");
     compileStatements();
     writeSymbol("}");
-    m_vmWriter->writeGoto("L" + to_string(currentLabelCounter));
-    m_vmWriter->writeLabel("L" + to_string(currentLabelCounter + 1));
+    m_vmWriter->writeGoto(m_className + ".L" + to_string(currentLabelCounter));
+    m_vmWriter->writeLabel(m_className + ".L" + to_string(currentLabelCounter + 1));
 }
 
 void CompilationEngine::compileDo()

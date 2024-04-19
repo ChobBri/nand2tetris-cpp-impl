@@ -44,7 +44,7 @@ class Memory {
 
         while (searchingSegment)
         {
-            if (segment[1] > (size + 1))
+            if ((segment[1] - 1) > size)
             {
                 let searchingSegment = false;
             }
