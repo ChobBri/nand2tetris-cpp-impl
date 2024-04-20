@@ -32,6 +32,9 @@ The project is split into two parts where part 1-6 focuses on Hardware and 7-12 
 11. Compiler II: Code Generation
 12. Operating System
 
+
+## Code Structure
+
 For presentation purposes, I have grouped code component wise instead of project-part wise.
 
 The components are:
@@ -41,8 +44,6 @@ The components are:
 * Jack Compiler
 * OS
 * Software application (Tetris!)
-
-## Code Structure
 
 Because my version of Tetris ended up being too big, I have two versions of the Tetris and OS folder: Unoptimized and optimized.
 
