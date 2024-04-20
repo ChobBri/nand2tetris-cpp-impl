@@ -12,8 +12,6 @@ Nand2Tetris is an epic 12-part project to building a 16-bit computer (Hack platf
 
 The project is split into two parts where part 1-6 focuses on Hardware and 7-12 focuses on Software.
 
-## Table of Contents
-
 **Hardware:**
 
 1. Boolean Logic
