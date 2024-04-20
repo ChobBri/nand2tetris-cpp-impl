@@ -8,9 +8,9 @@ Reference material: [The Elements of Computing Systems: Building a Modern Comput
 <!-- Nand2Tetris -->
 ## Nand2Tetris
 
-Nand2Tetris is an epic 12-part project to building a 16-bit computer (Hack platform) and a software application (Jack application) targetting the Hack platform.
+Nand2Tetris is an epic 12-part project for building a 16-bit computer (Hack platform) and a software application (Jack application) targetting the Hack platform.
 
-The project is split into two parts where part 1-6 focuses on Hardware and 7-12 focuses on Software.
+The project is split into two parts where parts 1-6 focus on Hardware and 7-12 focus on Software.
 
 **Hardware:**
 
@@ -33,7 +33,7 @@ The project is split into two parts where part 1-6 focuses on Hardware and 7-12 
 
 ## Code Structure
 
-For presentation purposes, I have grouped code component wise instead of project-part wise.
+For presentation purposes, I have grouped my code component-wise instead of project-part-wise.
 
 The components are:
 * Hardware
@@ -49,7 +49,7 @@ The optimized version is roughly half the size to stay under the 32K instruction
 
 ## How to run
 
-I have implemented Tetris in the Jack language. I mean, it was kind of in the name.
+I have implemented Tetris in the Jack language. I mean, it is kind of in the name.
 
 You will need to grab the CPU Emulator or VM Emulator from the Nand2Tetris website ([here](https://www.nand2tetris.org/software))
 
