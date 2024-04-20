@@ -8,7 +8,7 @@ Reference material: [The Elements of Computing Systems: Building a Modern Comput
 <!-- Nand2Tetris -->
 ## Nand2Tetris
 
-Nand2Tetris is an epic 12-part project for building a 16-bit computer (Hack platform) and a software application (Jack application) targetting the Hack platform.
+Nand2Tetris is an epic 12-part project for building a 16-bit computer (Hack platform) and a software application (Jack application) targetting the Hack platform, all from ground up.
 
 The project is split into two parts where parts 1-6 focus on Hardware and 7-12 focus on Software.
 
