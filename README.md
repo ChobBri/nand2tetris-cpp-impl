@@ -59,6 +59,8 @@ Under "Animate:", choose "No animation", then press "Run".
 
 Your experience may vary. On my machine, the game runs very slowly. Although, on other days, the speed is acceptable. Weird...
 
+I think VM Emulator runs the game faster than CPU Emulator.
+
 ## Manual build
 
 I have created a Makefile to compile the .Jack files into .vm files, which compiles down to assembly, then to binary.
